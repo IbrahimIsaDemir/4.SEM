@@ -28,8 +28,8 @@ namespace ST4_ImplementationExamples
         {
             //build json content string
             var msg = new OperationMessage();
+            msg.Programname = Operations.MoveToAssemblyOperation.ToString();
             msg.State = 1;
-            msg.Programname = "MoveToAssemblyOperation";
 
             //new request obj
             RestRequest putRequest = request;
@@ -42,12 +42,23 @@ namespace ST4_ImplementationExamples
             //Console.WriteLine("PUT request response" + response.Content);
         }
 
+        public async void Execute()
+        {
+            var msg = new executeMessage();
+            msg.State = 2;
+
+            RestRequest puRestRequest = request;
+            puRestRequest.AddJsonBody(msg);
+        }
+
         //test status method
         public async void GetStatus()
         {
             //GET request
             RestResponse response = await client.GetAsync(request);
-            Console.WriteLine("GET request response: " + response.Content);        
+            Console.WriteLine("GET request response: " + response.Content);
+
+            //dynamic msg = JsonConvert.DeserializeObject(response);
         }
     }
 
@@ -57,6 +68,11 @@ namespace ST4_ImplementationExamples
         //tag forces the name of the json attribute on serialization to the specified PropertyName
         [JsonProperty(PropertyName = "Program name")]
         public string Programname { get; set; }
+        public int State { get; set; }
+    }
+
+    public class executeMessage
+    {
         public int State { get; set; }
     }
 }

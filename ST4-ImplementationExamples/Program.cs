@@ -9,7 +9,7 @@ namespace ST4_ImplementationExamples
             //REST
             REST rest = new REST();
             _ = rest.RunExample();
-
+            /*
             //MQTT
             MQTT mqtt = new MQTT();
             _ = mqtt.RunExample();
@@ -17,6 +17,7 @@ namespace ST4_ImplementationExamples
             //SOAP
             SOAP soap = new SOAP();
             _ = soap.RunExample();
+            */
 
             Console.ReadKey();
         }
