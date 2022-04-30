@@ -5,28 +5,33 @@ using Newtonsoft.Json;
 using System;
 using System.Text;
 using System.Threading.Tasks;
+using MQTTnet.Extensions.ManagedClient;
+using MQTTnet.Server.Internal;
 
 namespace ST4_ImplementationExamples
 {
     public class MQTT
     {
         public MQTT()
-        {
-        }
-
+        { }
+        
         //MQTT vars
         MqttFactory factory;
-        IMqttClient client;
-        IMqttClientOptions options;
-
-        private async Task Connect()
+        MqttClient client; //interface:: added 
+        IMqttClientOptions messageBuilder;
+        //IMqttClient client11;
+        private async Task Connect() 
         {
             //init MQTT vars
-            factory = new MqttFactory();
-            client = factory.CreateMqttClient();
-            options = new MqttClientOptionsBuilder()
-                .WithClientId("")
-                .WithTcpServer("localhost", 1883)
+            string clientId = Guid.NewGuid().ToString();//// added 
+            /*factory = new MqttFactory();
+            client = factory.CreateMqttClient();*/// used to connection 
+            client = (MqttClient) new MqttFactory().CreateMqttClient();/// used to connection
+            messageBuilder = new MqttClientOptionsBuilder()//how to connect 
+                //.WithCredentials("Jakub","1111")// added
+                //.WithTls()// added
+                .WithClientId(clientId)
+                .WithTcpServer("localhost", 1883) 
                 .WithCleanSession(true)
                 .Build();
 
@@ -34,29 +39,31 @@ namespace ST4_ImplementationExamples
             //on established connection
             client.UseConnectedHandler(e =>
             {
-                Console.WriteLine("Connected.");
+                Console.WriteLine("Connected successfully with MQTT Brokers."); 
+                SubscribeToTopic("emulator/operation");
                 SubscribeToTopic("emulator/status");
-                SubscribeToTopic("emulator/echo");
+                //SubscribeToTopic("emulator/echo");
+                SubscribeToTopic("emulator/checkhealth");// added
             });
 
             //on lost connection
             client.UseDisconnectedHandler(e =>
             {
-                Console.WriteLine("Disconnected.");
+                Console.WriteLine("Disconnected from MQTT Brokers.");
             });
 
             //on receive message on subscribed topic
-            client.UseApplicationMessageReceivedHandler(e =>
+            MqttClientExtensions.UseApplicationMessageReceivedHandler(client, e =>
             {
                 Console.WriteLine($"MQTT Subscribed message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} on topic: {e.ApplicationMessage.Topic}");
             });
 
             //connect
-            await client.ConnectAsync(options);
+            await client.ConnectAsync(messageBuilder);
         }
-
-
-        public async void SubscribeToTopic(string input)
+        
+            //Subscribe messages from the MQTT Broker // added
+        public async void SubscribeToTopic(string input,int qos = 1)
         {
             //printout
             Console.WriteLine("Subscribing to : " + input);
@@ -64,17 +71,33 @@ namespace ST4_ImplementationExamples
             //define topics
             var topic = new MqttTopicFilterBuilder()
                 .WithTopic(input)
+                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)// added
                 .Build();
 
             //subscribe
             await client.SubscribeAsync(topic);
         }
 
-        //publish method
+        //publish method /*call in RunExample()*/
+        
         public async Task PublishOnTopic(string msg, string topic)
         {
+            
             await client.PublishAsync(msg, topic);
         }
+
+        //Publish messages to the MQTT Broker//added
+        public async Task PublishOnTopic1(String msg, string topic, bool retainFlag = true, int qos = 1)// added
+        {
+            await client.PublishAsync(msg,topic);
+            await client.PublishAsync(new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                //.WithPayload(payload)
+                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
+                .WithRetainFlag(retainFlag)
+                .Build());
+        }
+
 
         //runner
         public async Task RunExample()
@@ -84,17 +107,19 @@ namespace ST4_ImplementationExamples
 
             //json serializable object
             var msg = new MQTTMessage();
-            msg.ProcessID = 9999;
-            
+            msg.ProcessID =11;
             //run publish
-            await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
+            await PublishOnTopic1("emulator/operation", JsonConvert.SerializeObject(msg));
+             
         }
+        
     }
 
     //class to serialize json objects
     public class MQTTMessage
     {
-        public int ProcessID { get; set; }
+       
+        public int ProcessID { get; set; } /*call in RunExample()*/
     }
 }
 
