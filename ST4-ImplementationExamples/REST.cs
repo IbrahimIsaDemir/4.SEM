@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using RestSharp;
 using System;
+using System.IO;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -15,7 +17,7 @@ namespace ST4_ImplementationExamples
         //init REST
         private RestClient client = new RestClient("http://localhost:8082");
         private RestRequest request = new RestRequest("v1/status/");
-
+        
         //runner
         public async Task RunExample()
         {
@@ -25,7 +27,25 @@ namespace ST4_ImplementationExamples
 
         //test PUT request
         public async void PutOperation()
-        {
+        {   
+            var url = "http://localhost:8082/v1/status/";
+
+            var httpRequest = (HttpWebRequest)WebRequest.Create(url);
+            httpRequest.Method = "PUT";
+
+            httpRequest.ContentType = "application/json";
+
+            var data = @"{
+                ""Program name"": ""PutWarehouseOperation"",
+                ""State"": 1
+            }";
+            
+
+            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+            {
+                streamWriter.Write(data);
+            }
+            /*
             //build json content string
             var msg = new OperationMessage();
             msg.Programname = Operations.MoveToAssemblyOperation.ToString();
@@ -40,6 +60,8 @@ namespace ST4_ImplementationExamples
             //PUT request
             //var response = await client.PutAsync(putRequest);
             //Console.WriteLine("PUT request response" + response.Content);
+            */
+            
         }
 
         public async void Execute()
