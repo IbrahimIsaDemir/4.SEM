@@ -24,6 +24,7 @@ namespace ST4_ImplementationExamples
         public async Task RunExample()
         {
             PutOperation();
+            Execute();
             GetStatus();
         }
 
@@ -36,7 +37,7 @@ namespace ST4_ImplementationExamples
             httpRequest.ContentType = "application/json";
 
             var msg = @"{
-                ""Program name"": ""PutWarehouseOperation"",
+                ""Program name"": ""PickWarehouseOperation"",
                 ""State"": 1
             }";
             
@@ -66,7 +67,6 @@ namespace ST4_ImplementationExamples
             //var response = await client.PutAsync(putRequest);
             //Console.WriteLine("PUT request response" + response.Content);
             */
-
         }
 
         public async void Execute()
@@ -77,8 +77,7 @@ namespace ST4_ImplementationExamples
             httpRequest.ContentType = "application/json";
 
             var msg = @"{
-                ""Program name"": ""PickWarehouseOperation"",
-                ""State"": 1
+                ""State"": 2
             }";
             
             using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
