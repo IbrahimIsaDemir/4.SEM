@@ -23,23 +23,62 @@ namespace ST4_ImplementationExamples
         //runner
         public async Task RunExample()
         {
-            PutOperation();
-            Execute();
+            
             GetStatus();
         }
 
         //test PUT request
-        public async void PutOperation()
+        public async void ChooseOperation(int i)
         {
             var httpRequest = (HttpWebRequest)WebRequest.Create(url);
             httpRequest.Method = "PUT";
 
             httpRequest.ContentType = "application/json";
 
-            var msg = @"{
-                ""Program name"": ""PickWarehouseOperation"",
+            string operation = "";
+            switch (i)
+            {
+                case 1:
+                {
+                    operation = Operations.MoveToStorageOperation.ToString();
+                    break;
+                }
+                case 2:
+                {
+                    operation = Operations.PickWarehouseOperation.ToString();
+                    break;
+                }
+                case 3:
+                {
+                    operation = Operations.PutWarehouseOperation.ToString();
+                    break;
+                }
+                case 4:
+                {
+                    operation = Operations.MoveToAssemblyOperation.ToString();
+                    break;
+                }
+                case 5:
+                {
+                    operation = Operations.PutAssemblyOperation.ToString();
+                    break;
+                }
+                case 6:
+                {
+                    operation = Operations.PickAssemblyOperation.ToString();
+                    break;
+                }
+                case 7:
+                {
+                    operation = Operations.MoveToChargerOperation.ToString();
+                    break;
+                }
+            }
+            
+            var msg = $@"{{
+                ""Program name"": ""{operation}"",
                 ""State"": 1
-            }";
+            }}";
             
             using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
             {
@@ -50,51 +89,9 @@ namespace ST4_ImplementationExamples
             //ps. don't know why *wondering*
             //if it's stupid but it works it ain't stupid
             var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
-
-            /*
-            //build json content string
-            var msg = new OperationMessage();
-            msg.Programname = Operations.MoveToAssemblyOperation.ToString();
-            msg.State = 1;
-
-            //new request obj
-            RestRequest putRequest = request;
-            putRequest.AddJsonBody(msg);//add body
-            //putRequest.RequestFormat = DataFormat.Json;//define format
-            //putRequest.Method = Method.Put;
-
-            //PUT request
-            //var response = await client.PutAsync(putRequest);
-            //Console.WriteLine("PUT request response" + response.Content);
-            */
-        }
-
-        public async void Execute()
-        {
-            var httpRequest = (HttpWebRequest)WebRequest.Create(url);
-            httpRequest.Method = "PUT";
-
-            httpRequest.ContentType = "application/json";
-
-            var msg = @"{
-                ""State"": 2
-            }";
             
-            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
-            {
-                streamWriter.Write(msg);
-            }
-            
-            var httpResponse = (HttpWebResponse)httpRequest.GetResponse();
-            /*
-            var msg = new executeMessage();
-            msg.State = 2;
-
-            RestRequest puRestRequest = request;
-            puRestRequest.AddJsonBody(msg);
-            */
+            GetStatus();
         }
-
         //test status method
         public async void GetStatus()
         {
@@ -112,11 +109,6 @@ namespace ST4_ImplementationExamples
         //tag forces the name of the json attribute on serialization to the specified PropertyName
         [JsonProperty(PropertyName = "Program name")]
         public string Programname { get; set; }
-        public int State { get; set; }
-    }
-
-    public class executeMessage
-    {
         public int State { get; set; }
     }
 }
