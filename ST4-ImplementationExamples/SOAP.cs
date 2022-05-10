@@ -29,13 +29,11 @@ namespace ST4_ImplementationExamples
             //var response = await service.GetInventoryAsync();
             //Console.WriteLine(response);
 
-            var service = new EmulatorServiceClient();
+            //var service = new EmulatorServiceClient();
 
             /*bool run = true;
             while (run)
             {
-                
-                
                 Console.WriteLine("Select an option.");
                 Console.WriteLine("1> Get Inventory");
                 Console.WriteLine("2> Pick Item");
@@ -47,13 +45,9 @@ namespace ST4_ImplementationExamples
                 string input = Console.ReadLine();
                 int number;
                 Int32.TryParse(input, out number);
-                
+
                 switch (number)
                 {
-                    case 1:
-                        var response = await service.GetInventoryAsync();
-                        Console.WriteLine(response);
-                        break;
                     case 2:
                         Console.WriteLine("Input Item Number:");
                         int pickItemNum = Convert.ToInt32(Console.ReadLine());
@@ -75,7 +69,7 @@ namespace ST4_ImplementationExamples
                         break;
                 }*/
 
-            while (true)
+            /*while (true)
             {
                 using (var client = new HttpClient())
                 {
@@ -97,67 +91,32 @@ namespace ST4_ImplementationExamples
 
 
                 Thread.Sleep(2000);
-            }
+            }*/
         }
-    }
-}
-
-
-/*public static void WebService()
-{
-    var _url = "http://localhost:8081/Service.asmx";
-
-    XmlDocument soapEnvelopeXml = CreateSoapEnvelope();
-    HttpWebRequest webRequest = CreateWebRequest(_url);
-    InsertEnvelopeIntoRequest(soapEnvelopeXml, webRequest);
-
-    //async call to web request
-    IAsyncResult asyncResult = webRequest.BeginGetResponse(null, null);
-
-    //suspend thread until complete (to update ui)
-    asyncResult.AsyncWaitHandle.WaitOne();
-
-    //response from completed request
-    string soapResult;
-    using (WebResponse webResponse = webRequest.EndGetResponse(asyncResult))
-    {
-        using (StreamReader rd = new StreamReader(webResponse.GetResponseStream()))
+        public async void GetStatus()
         {
-            soapResult = rd.ReadToEnd();
+            var service = new EmulatorServiceClient();
+            var response = await service.GetInventoryAsync();
+            Console.WriteLine(response);
         }
 
-        Console.Write(soapResult);
+        public async void PickItem()
+        {
+            var service = new EmulatorServiceClient();
+            Console.WriteLine("Input Item Number:");
+            int pickItemNum = Convert.ToInt32(Console.ReadLine());
+            var pickRe = await service.PickItemAsync(pickItemNum);
+            Console.WriteLine(pickRe);
+        }
+
+        public async void InsertItem()
+        {
+            var service = new EmulatorServiceClient();
+            Console.WriteLine("Input Item to Insert & Name");
+            int insertNum = Convert.ToInt32(Console.ReadLine());
+            string insertName = Console.ReadLine();
+            var insertRe = await service.InsertItemAsync(insertNum, insertName);
+            Console.WriteLine(insertRe);
+        }
     }
 }
-
-private static HttpWebRequest CreateWebRequest(string url)
-{
-    HttpWebRequest webRequest = (HttpWebRequest) WebRequest.Create(url);
-    webRequest.Headers.Add("SOAPAction", url);
-    webRequest.ContentType = "text/xml;charset=\"utf-8\"";
-    webRequest.Accept = "text/xml";
-    webRequest.Method = "POST";
-    return webRequest;
-}
-
-private static XmlDocument CreateSoapEnvelope()
-{
-    XmlDocument soapEnvelopeDocument = new XmlDocument();
-    soapEnvelopeDocument.LoadXml(
-        @"<Envelope xmlns=""http://schemas.xmlsoap.org/soap/envelope/"">
-            <Body>
-                <PickItem xmlns=""http://tempuri.org/"">
-                    <trayId>1</trayId>
-                </PickItem>
-            </Body>
-        </Envelope>");
-    return soapEnvelopeDocument;
-}
-
-private static void InsertEnvelopeIntoRequest(XmlDocument soapEnvelopeXml, HttpWebRequest webRequest)
-{
-    using (Stream stream = webRequest.GetRequestStream())
-    {
-        soapEnvelopeXml.Save(stream);
-    }
-}*/
