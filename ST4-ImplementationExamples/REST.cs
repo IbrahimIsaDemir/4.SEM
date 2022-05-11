@@ -18,14 +18,16 @@ namespace ST4_ImplementationExamples
 
         //init REST
         private RestClient client = new RestClient("http://localhost:8082");
-        private RestRequest request = new RestRequest("v1/status/");
+        private RestRequest Request = new RestRequest("v1/status/");
         
+        /*
         //runner
         public async Task RunExample()
         {
             
             GetStatus();
         }
+        */
 
         //test PUT request
         public async void ChooseOperation(int i)
@@ -36,6 +38,7 @@ namespace ST4_ImplementationExamples
             httpRequest.ContentType = "application/json";
 
             string operation = "";
+            
             switch (i)
             {
                 case 1:
@@ -91,15 +94,51 @@ namespace ST4_ImplementationExamples
             var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
             
             GetStatus();
+            execute();
+            GetStatus();
         }
+        
+        public void goToWarehouse()
+        {
+            var msg = new OperationMessage();
+            msg.Programname = "Go to warehouse";
+            msg.State = 1;
+            RestRequest request = new RestRequest("v1/status/");
+            String json = JsonConvert.SerializeObject(msg);
+            request.AddJsonBody(json, DataFormat.Json.ToString());
+            client.ExecutePutAsync(request).Wait();
+        }
+                
         //test status method
         public async void GetStatus()
         {
             //GET request
-            RestResponse response = await client.GetAsync(request);
+            RestResponse response = await client.GetAsync(Request);
             Console.WriteLine("GET request response: " + response.Content);
 
             //dynamic msg = JsonConvert.DeserializeObject(response);
+        }
+
+        public async void execute()
+        {
+            var httpRequest = (HttpWebRequest)WebRequest.Create(url);
+            httpRequest.Method = "PUT";
+
+            httpRequest.ContentType = "application/json";
+            
+            var msg = $@"{{
+                ""State"": 1
+            }}";
+            
+            using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
+            {
+                streamWriter.Write(msg);
+            }
+            
+            //DONT FUCKING DELETE OR IT WILL BREAK!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            //ps. don't know why *wondering*
+            //if it's stupid but it works it ain't stupid
+            var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
         }
     }
 

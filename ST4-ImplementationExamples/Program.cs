@@ -18,7 +18,7 @@ namespace ST4_ImplementationExamples
             SOAP soap = new SOAP();
             _ = soap.RunExample();
             */
-            
+            /*
             Console.WriteLine("Welcome to the AGV");
             Console.WriteLine("Please pick a program");
             Console.WriteLine("1: move to warehouse");
@@ -28,12 +28,15 @@ namespace ST4_ImplementationExamples
             Console.WriteLine("5: put items into assemblystation");
             Console.WriteLine("6: pick items from assembly station");
             Console.WriteLine("7: Move to charger");
-            
+            */
+            rest.goToWarehouse();
+            rest.GetStatus();
+            /*
             while (true)
             {
                 int i = int.Parse(Console.ReadLine());
                 int maximumOptions = 7;
-
+                
                 if (i>maximumOptions)
                 {
                     Console.WriteLine($"Please pick a value between 1 and {maximumOptions}");
@@ -42,10 +45,11 @@ namespace ST4_ImplementationExamples
                 if (i<=maximumOptions)
                 {
                     rest.ChooseOperation(i);
-                    rest.GetStatus();
+                    //rest.GetStatus();
                 }
                 Console.ReadKey();
             }
+            */
         }
     }
 }
