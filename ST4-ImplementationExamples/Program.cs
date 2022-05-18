@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 
 namespace ST4_ImplementationExamples
 {
@@ -8,14 +9,15 @@ namespace ST4_ImplementationExamples
         {
             //REST
             REST rest = new REST();
+            MQTT mqtt = new MQTT();
+            SOAP soap = new SOAP();
             //_ = rest.RunExample();
             /*
+            
             //MQTT
-            MQTT mqtt = new MQTT();
             _ = mqtt.RunExample();
 
             //SOAP
-            SOAP soap = new SOAP();
             _ = soap.RunExample();
             */
             /*
@@ -29,8 +31,51 @@ namespace ST4_ImplementationExamples
             Console.WriteLine("6: pick items from assembly station");
             Console.WriteLine("7: Move to charger");
             */
-            rest.goToWarehouse();
+            rest.ChooseOperation(1);
             rest.GetStatus();
+            rest.execute();
+            rest.GetStatus();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            rest.ChooseOperation(2);
+            rest.GetStatus();
+            rest.execute();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            rest.ChooseOperation(4);
+            rest.GetStatus();
+            rest.execute();
+            rest.GetStatus();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            rest.ChooseOperation(5);
+            rest.GetStatus();
+            rest.execute();
+            rest.GetStatus();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            
+            //Her skal koden for assemblyStation sættes ind
+            
+            rest.ChooseOperation(6);
+            rest.GetStatus();
+            rest.execute();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            rest.ChooseOperation(1);
+            rest.GetStatus();
+            rest.execute();
+            rest.GetStatus();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            rest.ChooseOperation(3);
+            rest.GetStatus();
+            rest.execute();
+            Thread.Sleep(8000);
+            rest.GetStatus();
+            
+            //Her skal warehouse koden sættes ind
+
             /*
             while (true)
             {

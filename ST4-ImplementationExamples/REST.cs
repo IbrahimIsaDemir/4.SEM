@@ -93,9 +93,6 @@ namespace ST4_ImplementationExamples
             //if it's stupid but it works it ain't stupid
             var httpResponse = (HttpWebResponse) httpRequest.GetResponse();
             
-            GetStatus();
-            execute();
-            GetStatus();
         }
         
         public void goToWarehouse()
@@ -127,7 +124,7 @@ namespace ST4_ImplementationExamples
             httpRequest.ContentType = "application/json";
             
             var msg = $@"{{
-                ""State"": 1
+                ""State"": 2
             }}";
             
             using (var streamWriter = new StreamWriter(httpRequest.GetRequestStream()))
