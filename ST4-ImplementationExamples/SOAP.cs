@@ -114,7 +114,7 @@ namespace ST4_ImplementationExamples
             var service = new EmulatorServiceClient();
             Console.WriteLine("Input Item to Insert & Name");
             int insertNum = Convert.ToInt32(Console.ReadLine());
-            string insertName = Console.ReadLine();
+            string insertName = Convert.ToString(Console.ReadLine());
             var insertRe = await service.InsertItemAsync(insertNum, insertName);
             Console.WriteLine(insertRe);
         }
