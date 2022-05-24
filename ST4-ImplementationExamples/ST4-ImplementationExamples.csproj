@@ -4,10 +4,12 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>ST4_ImplementationExamples</RootNamespace>
+    <LangVersion>9</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MQTTnet" Version="3.1.2" />
+    <PackageReference Include="MQTTnet.Extensions.ManagedClient" Version="3.1.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="RestSharp" Version="107.3.0" />
     <PackageReference Include="System.ServiceModel.Duplex" Version="4.7.*" />
