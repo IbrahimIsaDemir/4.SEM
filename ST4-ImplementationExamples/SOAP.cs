@@ -100,7 +100,7 @@ namespace ST4_ImplementationExamples
             Console.WriteLine(response);
         }
 
-        public async void PickItem()
+        public async void PickSingleItem()
         {
             var service = new EmulatorServiceClient();
             Console.WriteLine("Input Item Number:");
@@ -109,7 +109,7 @@ namespace ST4_ImplementationExamples
             Console.WriteLine(pickRe);
         }
 
-        public async void InsertItem()
+        public async void InsertSingleItem()
         {
             var service = new EmulatorServiceClient();
             Console.WriteLine("Input Item to Insert & Name");
@@ -117,6 +117,28 @@ namespace ST4_ImplementationExamples
             string insertName = Convert.ToString(Console.ReadLine());
             var insertRe = await service.InsertItemAsync(insertNum, insertName);
             Console.WriteLine(insertRe);
+
+        }
+
+
+        private int itemNum = 0;
+        public async void PickAndInsertItem()
+        {
+            var service = new EmulatorServiceClient();
+            
+            var name = "Inserted";
+            
+            itemNum = itemNum + 1;
+            if (itemNum > 10)
+            {
+                itemNum = 1;
+            }
+            
+            
+            Console.WriteLine("Item number and name inserted: " + itemNum + " " + name);
+            var pickInsertPick = await service.PickItemAsync(itemNum);
+            var pickInsertItem = await service.InsertItemAsync(itemNum, name);
+            Console.WriteLine(pickInsertPick + " & " + pickInsertItem);
         }
     }
 }

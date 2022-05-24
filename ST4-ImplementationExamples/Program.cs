@@ -22,9 +22,10 @@ namespace ST4_ImplementationExamples
             
             Console.WriteLine("Select an option.");
             Console.WriteLine("1> Get Inventory");
-            Console.WriteLine("2> Pick Item");
-            Console.WriteLine("3> Insert Item");
-            Console.WriteLine("4> Exit");
+            Console.WriteLine("2> Pick Single Item");
+            Console.WriteLine("3> Insert Single Item");
+            Console.WriteLine("4> Pick and Insert (auto increment)");
+            Console.WriteLine("5> Exit");
 
             while (true)
             {
@@ -36,12 +37,15 @@ namespace ST4_ImplementationExamples
                         soap.GetStatus();
                         break;
                     case 2:
-                        soap.PickItem();
+                        soap.PickSingleItem();
                         break;
                     case 3:
-                        soap.InsertItem();
+                        soap.InsertSingleItem();
                         break;
                     case 4:
+                        soap.PickAndInsertItem();
+                        break;
+                    case 5:
                         Environment.Exit(0);
                         break;
                     default:
