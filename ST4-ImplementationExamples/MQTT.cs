@@ -3,6 +3,7 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -12,7 +13,11 @@ using System.Threading.Tasks;
 using MQTTnet.Extensions;
 using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Server.Internal;
-using System.IO; 
+using System.IO;
+using System.Xml;
+using MQTTnet.Client.Unsubscribing;
+using MQTTnet.Server.Status;
+
 namespace ST4_ImplementationExamples
 {
     public class MQTT
@@ -22,27 +27,23 @@ namespace ST4_ImplementationExamples
         
         //MQTT vars
         MqttFactory factory;
-        MqttClient mqttClient; //interface:: added 
+        MqttClient mqttClient;
         IMqttClientOptions mqttClientOptions;
-        ManagedMqttClient ManagedMqttClient;
-        //IMqttClient client11;
+         MqttClientOptionsBuilder mqttClientOptionsBuilder;
+         //connection 
         private async Task Connect()
         {
             //init MQTT vars
-            string clientId = Guid.NewGuid().ToString();//// added 
-          
-            /*factory = new MqttFactory();
-            client = factory.CreateMqttClient();*/// used to connection 
+            string clientId = Guid.NewGuid().ToString();
             mqttClient = (MqttClient) new MqttFactory().CreateMqttClient();/// used to connection
             mqttClientOptions = new MqttClientOptionsBuilder()// connection Preparation
-                .WithCredentials("Jakub","1111")// added 
+                .WithCredentials("Jakub","1111")// ti si optional 
                 .WithClientId(clientId)
                 .WithTcpServer("localhost", 1883) //TCP connection
                 .WithCleanSession(true)
                 .WithRequestResponseInformation(true)
-                .WithUserProperty("Bouzan","1993")
-               // .WithCommunicationTimeout(TimeSpan.FromSeconds(10))
                 .Build();
+           
 
             //the handlers of MQTTnet are very useful when working with an event-based communication
             //on established connection
@@ -54,8 +55,6 @@ namespace ST4_ImplementationExamples
                 }
               
             });
-          
-            
             //on lost connection
             mqttClient.UseDisconnectedHandler(e =>
             {
@@ -73,125 +72,120 @@ namespace ST4_ImplementationExamples
                 }
             });
            
-            //on receive message on subscribed topic
-            mqttClient.UseApplicationMessageReceivedHandler( e =>
+            // receive message on subscribed topic
+            mqttClient.UseApplicationMessageReceivedHandler(  e =>
             { Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
               // Console.WriteLine($"MQTT Subscribed message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} on topic: {e.ApplicationMessage.Topic}");
               Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
-               //Console.WriteLine($"+ ResponseTopic = {e.ApplicationMessage.ResponseTopic}");
-               //Console.WriteLine($"+ Retain = {e.ApplicationMessage.Retain}");
                Console.WriteLine();
             });
-                //connect
-                await mqttClient.ConnectAsync(mqttClientOptions);
-            Console.WriteLine("Select an option.");
-            Console.WriteLine("1> Idle");
-            Console.WriteLine("2> Executing");
-            Console.WriteLine("3> Error");
-            Console.WriteLine("4> Exit");
-            string input = Console.ReadLine();
-            int number;
-            Int32.TryParse(input, out number);
-
-            switch (number)
-            {
-                case 1:
-                {
+            //connect
+            await mqttClient.ConnectAsync(mqttClientOptions);
+        }
+        public async void Idle()//stand in idle state 
+        {
+            mqttClientOptionsBuilder = new MqttClientOptionsBuilder();
+                    mqttClientOptionsBuilder.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
                     Console.WriteLine("It is in idle state:");
-                    //stand in idle state 
-                    SubscribeToTopic("emulator/status");
-                    SubscribeToTopic("emulator/response");
-                    mqttClientOptions = new MqttClientOptionsBuilder()
-                        .WithCommunicationTimeout(TimeSpan.FromSeconds(1))
-                        .Build();
-                    break;
-                    
-                }
-                case 2:
-                {
-                    Console.WriteLine("it is in execution state:");
-                    // stand in excution state
-                    SubscribeToTopic("emulator/status");
-                        SubscribeToTopic("emulator/response");
-                        SubscribeToTopic("emulator/checkhealth");
-                        break;
-                        
-                }
-                case 3:
-                {
-
-
-                    Console.WriteLine("Input Item to Insert & Name");
-                    break;
-                }
-                case 4:
-                {
-                    Environment.Exit(0);
-                    break;
-                }
-                default:
-                {
-                    Console.WriteLine("Invalid Input!");
-                    break;
-                }
-            }
+                    try
+                    {
+                        await SubscribeToTopic("emulator/status");
+                        await SubscribeToTopic("emulator/response");
+                        Thread.Sleep(9000); 
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e);
+                    }
+        }
+        // stand in execution state
+        public async Task Execution()
+        {
+            await OperationRun();
+                  //on receive message on subscribed topic
+                
+                  Console.WriteLine("it is in execution state:"); ;
+                  await SubscribeToTopic("emulator/response");
+                  await SubscribeToTopic("emulator/checkhealth");
+                  await SubscribeToTopic("emulator/status");
+                 
+                  while (true){
+                   
+                        try
+                        {  
+                            Thread.Sleep(11000);
+                            var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+                        }
+                        catch (Exception e)
+                        {
+                            Console.WriteLine(e);
+                        }
+                  }
             
-          
-            
+                  
         }
 
-       
-
-        //Subscribe messages from the MQTT Broker 
-        public async void SubscribeToTopic(string input,int qos = 1)
+        public async void Error()
         {
-            //printout
+            Console.WriteLine("There are Errors");
+            await UnsubscribeAsync("emulator/status");
+        }
+        
+        //Subscribe messages from the MQTT Broker 
+        private async Task SubscribeToTopic(string input,int qos = 1)
+        {
             Console.WriteLine("Subscribing to : " + input);
-
             //define topics
             var topic = new MqttTopicFilterBuilder()
                 .WithTopic(input)
-                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)// added
+                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
                 .Build();
-
             //subscribe
             await mqttClient.SubscribeAsync(topic);
+        }
+        //unSubscribe messages from the MQTT Broker 
+        public async Task UnsubscribeAsync(string input)
+        {
+            var topic1 = new MqttTopicFilterBuilder()
+                .WithTopic(input)
+                .Build();
+           await mqttClient.UnsubscribeAsync(topic1.Topic);
         }
         
         //Publish messages to the MQTT Broker
         public async Task PublishOnTopic(String msg, string topic, int qos = 1)// added
+        
         {
-            // it is not necessary 
-            var message =new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                //.WithPayload("publish to broker ")
-                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel) qos)
-                .WithRetainFlag(true)
-                .WithExactlyOnceQoS()
-                .Build();
-           await mqttClient.PublishAsync(message, CancellationToken.None);
-            // it is not necessary
-           await mqttClient.PublishAsync(msg,topic);
+            await mqttClient.PublishAsync(msg,topic);
         }
-
-
+        
         //runner
         public async Task RunExample()
         { //connect and subscribe
             await Connect();
-            //json serializable object
-            var msg = new MQTTMessage();
-            msg.ProcessID =30;
-            //run publish
-            await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
         }
-        
-    }
+        public async Task OperationRun()
+        {
+            //json serializable object
+            var msg = new MqttMessage();
+            msg.ProcessID =9999;
+            //run publish
+            if (msg.ProcessID!=9999)
+            {
+                await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
+            }
+            else
+            {
+                await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
+                await PublishOnTopic("emulator/error", JsonConvert.SerializeObject("state:2"));
 
+            }
+        }
+    }
     //class to serialize json objects
-    public class MQTTMessage
+    public class MqttMessage
     {
         public int ProcessID { get; set; } 
     }
