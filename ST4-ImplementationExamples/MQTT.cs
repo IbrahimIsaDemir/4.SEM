@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MQTTnet.Extensions;
-using MQTTnet.Extensions.ManagedClient;
 using MQTTnet.Server.Internal;
 using System.IO;
 using System.Xml;
@@ -42,6 +41,8 @@ namespace ST4_ImplementationExamples
                 .WithTcpServer("localhost", 1883) //TCP connection
                 .WithCleanSession(true)
                 .WithRequestResponseInformation(true)
+                
+                .WithUserProperty("Bouzan","1993")
                 .Build();
            
 
@@ -89,16 +90,22 @@ namespace ST4_ImplementationExamples
             mqttClientOptionsBuilder = new MqttClientOptionsBuilder();
                     mqttClientOptionsBuilder.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
                     Console.WriteLine("It is in idle state:");
-                    try
-                    {
+            
                         await SubscribeToTopic("emulator/status");
                         await SubscribeToTopic("emulator/response");
-                        Thread.Sleep(9000); 
-                    }
-                    catch (Exception e)
-                    {
-                        Console.WriteLine(e);
-                    }
+                        while (true){
+                   
+                            try
+                            {  
+                                Thread.Sleep(1000);
+                                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine(e);
+                            }
+                        }
+                        
         }
         // stand in execution state
         public async Task Execution()
@@ -106,7 +113,7 @@ namespace ST4_ImplementationExamples
             await OperationRun();
                   //on receive message on subscribed topic
                 
-                  Console.WriteLine("it is in execution state:"); ;
+                  Console.WriteLine("it is in execution state:"); 
                   await SubscribeToTopic("emulator/response");
                   await SubscribeToTopic("emulator/checkhealth");
                   await SubscribeToTopic("emulator/status");
@@ -115,7 +122,7 @@ namespace ST4_ImplementationExamples
                    
                         try
                         {  
-                            Thread.Sleep(11000);
+                            Thread.Sleep(8300);
                             var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
                         }
                         catch (Exception e)
@@ -158,6 +165,14 @@ namespace ST4_ImplementationExamples
         public async Task PublishOnTopic(String msg, string topic, int qos = 1)// added
         
         {
+            var message =new MqttApplicationMessageBuilder()
+                .WithTopic(topic)
+                //.WithPayload("publish to broker ")
+                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel) qos)
+                .WithRetainFlag(true)
+                .WithExactlyOnceQoS()
+                .Build();
+            await mqttClient.PublishAsync(message, CancellationToken.None);
             await mqttClient.PublishAsync(msg,topic);
         }
         
@@ -170,7 +185,7 @@ namespace ST4_ImplementationExamples
         {
             //json serializable object
             var msg = new MqttMessage();
-            msg.ProcessID =9999;
+            msg.ProcessID =1;
             //run publish
             if (msg.ProcessID!=9999)
             {
@@ -179,7 +194,7 @@ namespace ST4_ImplementationExamples
             else
             {
                 await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
-                await PublishOnTopic("emulator/error", JsonConvert.SerializeObject("state:2"));
+                Console.WriteLine("There is an error");
 
             }
         }

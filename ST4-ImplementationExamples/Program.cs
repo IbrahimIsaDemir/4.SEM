@@ -10,6 +10,7 @@ namespace ST4_ImplementationExamples
             //REST
             REST rest = new REST();
             MQTT mqtt = new MQTT();
+            _ = mqtt.RunExample();
             SOAP soap = new SOAP();
             //_ = rest.RunExample();
 
@@ -17,24 +18,28 @@ namespace ST4_ImplementationExamples
             //Warehouse
             soap.PickAndInsertItem();
 
-            rest.ChooseOperation(1);
+            rest.ChooseOperation(1);//MoveToStorageOperation
             rest.GetStatus();
             rest.execute();
             rest.GetStatus();
             Thread.Sleep(8000);
             rest.GetStatus();
-            rest.ChooseOperation(2);
+            rest.ChooseOperation(2);//PickWarehouseOperation
             rest.GetStatus();
             rest.execute();
             Thread.Sleep(8000);
             rest.GetStatus();
-            rest.ChooseOperation(4);
+            rest.ChooseOperation(4);//MoveToAssemblyOperation
             rest.GetStatus();
             rest.execute();
             rest.GetStatus();
             Thread.Sleep(8000);
             rest.GetStatus();
-            rest.ChooseOperation(5);
+            
+            mqtt.Idle();// idle state:
+            Thread.Sleep(15000);
+            
+            rest.ChooseOperation(5);//PutAssemblyOperation
             rest.GetStatus();
             rest.execute();
             rest.GetStatus();
@@ -43,19 +48,21 @@ namespace ST4_ImplementationExamples
 
             //Her skal koden for assemblyStation sættes ind
             
+            mqtt.Execution();//execution state
+            Thread.Sleep(9000);
 
-            rest.ChooseOperation(6);
+            rest.ChooseOperation(6);//PickAssemblyOperation
             rest.GetStatus();
             rest.execute();
-            Thread.Sleep(8000);
+            Thread.Sleep(25000);
             rest.GetStatus();
-            rest.ChooseOperation(1);
+            rest.ChooseOperation(1);//MoveToStorageOperation
             rest.GetStatus();
             rest.execute();
             rest.GetStatus();
             Thread.Sleep(8000);
             rest.GetStatus();
-            rest.ChooseOperation(3);
+            rest.ChooseOperation(3);//PutWarehouseOperation
             rest.GetStatus();
             rest.execute();
             Thread.Sleep(8000);
