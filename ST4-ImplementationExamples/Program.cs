@@ -18,6 +18,10 @@ namespace ST4_ImplementationExamples
             //Warehouse
             soap.PickAndInsertItem();
 
+            
+            rest.CheckBattery();
+
+
             rest.ChooseOperation(1);//MoveToStorageOperation
             rest.GetStatus();
             rest.execute();
