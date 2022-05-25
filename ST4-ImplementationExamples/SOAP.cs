@@ -22,76 +22,7 @@ namespace ST4_ImplementationExamples
         //runner
         public async Task RunExample()
         {
-            //instatiate web service from 'Connected Services' reference through Visual Studio tool
-            //var service = new EmulatorServiceClient();
-
-            //print response of GetInventoryAsync()
-            //var response = await service.GetInventoryAsync();
-            //Console.WriteLine(response);
-
-            //var service = new EmulatorServiceClient();
-
-            /*bool run = true;
-            while (run)
-            {
-                Console.WriteLine("Select an option.");
-                Console.WriteLine("1> Get Inventory");
-                Console.WriteLine("2> Pick Item");
-                Console.WriteLine("3> Insert Item");
-                Console.WriteLine("4> Exit");
-
-                //int input = Convert.ToInt32(Console.ReadLine());
-
-                string input = Console.ReadLine();
-                int number;
-                Int32.TryParse(input, out number);
-
-                switch (number)
-                {
-                    case 2:
-                        Console.WriteLine("Input Item Number:");
-                        int pickItemNum = Convert.ToInt32(Console.ReadLine());
-                        var pickRe = await service.PickItemAsync(pickItemNum);
-                        Console.WriteLine(pickRe);
-                        break;
-                    case 3:
-                        Console.WriteLine("Input Item to Insert & Name");
-                        int insertNum = Convert.ToInt32(Console.ReadLine());
-                        string insertName = Console.ReadLine();
-                        var insertRe = await service.InsertItemAsync(insertNum, insertName);
-                        Console.WriteLine(insertRe);
-                        break;
-                    case 4:
-                        Environment.Exit(0);
-                        break;
-                    default:
-                        Console.WriteLine("Invalid Input!");
-                        break;
-                }*/
-
-            /*while (true)
-            {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:8082/v1/status/");
-
-                    HttpResponseMessage response = client.GetAsync("").Result;
-                    if (response.IsSuccessStatusCode)
-                    {
-                        var contents = await response.Content.ReadAsStringAsync();
-                        Console.WriteLine(contents);
-                        string s = contents;
-                        string[] values = s.Split(',');
-                        var operation = values[1].Trim(new[] {'"', ':'}).Remove(0, 15);
-                        var state = Convert.ToInt32(values[2].Remove(0, 8));
-
-                        Console.WriteLine("Operation: " + operation + "\n" + "State: " + state);
-                    }
-                }
-
-
-                Thread.Sleep(2000);
-            }*/
+            
         }
         public async void GetStatus()
         {
