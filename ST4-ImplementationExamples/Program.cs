@@ -36,25 +36,27 @@ namespace ST4_ImplementationExamples
             Thread.Sleep(8000);
             rest.GetStatus();
             
+            
             mqtt.Idle();// idle state:
-            Thread.Sleep(15000);
+            Thread.Sleep(8000);
             
             rest.ChooseOperation(5);//PutAssemblyOperation
             rest.GetStatus();
             rest.execute();
             rest.GetStatus();
+            
             Thread.Sleep(8000);
             rest.GetStatus();
 
             //Her skal koden for assemblyStation sættes ind
             
             mqtt.Execution();//execution state
-            Thread.Sleep(9000);
+            Thread.Sleep(8000);
 
             rest.ChooseOperation(6);//PickAssemblyOperation
             rest.GetStatus();
             rest.execute();
-            Thread.Sleep(25000);
+            Thread.Sleep(8000);
             rest.GetStatus();
             rest.ChooseOperation(1);//MoveToStorageOperation
             rest.GetStatus();

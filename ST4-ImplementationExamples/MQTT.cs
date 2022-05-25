@@ -28,7 +28,7 @@ namespace ST4_ImplementationExamples
         MqttFactory factory;
         MqttClient mqttClient;
         IMqttClientOptions mqttClientOptions;
-         MqttClientOptionsBuilder mqttClientOptionsBuilder;
+        MqttClientOptionsBuilder mqttClientOptionsBuilder;
          //connection 
         private async Task Connect()
         {
@@ -88,57 +88,44 @@ namespace ST4_ImplementationExamples
         public async void Idle()//stand in idle state 
         {
             mqttClientOptionsBuilder = new MqttClientOptionsBuilder();
-                    mqttClientOptionsBuilder.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
-                    Console.WriteLine("It is in idle state:");
+            mqttClientOptionsBuilder.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
             
-                        await SubscribeToTopic("emulator/status");
-                        await SubscribeToTopic("emulator/response");
-                        while (true){
-                   
-                            try
-                            {  
-                                Thread.Sleep(1000);
-                                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
-                            }
-                            catch (Exception e)
-                            {
-                                Console.WriteLine(e);
-                            }
-                        }
+            await SubscribeToTopic("emulator/status");
+            await SubscribeToTopic("emulator/response");
+            try
+            {  
+                Thread.Sleep(1000);
+                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
                         
         }
         // stand in execution state
         public async Task Execution()
         {
             await OperationRun();
-                  //on receive message on subscribed topic
-                
-                  Console.WriteLine("it is in execution state:"); 
-                  await SubscribeToTopic("emulator/response");
-                  await SubscribeToTopic("emulator/checkhealth");
-                  await SubscribeToTopic("emulator/status");
-                 
-                  while (true){
-                   
-                        try
-                        {  
-                            Thread.Sleep(8300);
-                            var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
-                        }
-                        catch (Exception e)
-                        {
-                            Console.WriteLine(e);
-                        }
-                  }
+            //on receive message on subscribed topic
             
-                  
+            Console.WriteLine("it is in execution state:"); 
+            await SubscribeToTopic("emulator/response");
+            await SubscribeToTopic("emulator/checkhealth");
+            await SubscribeToTopic("emulator/status");
+             
+            try
+            {  
+                Thread.Sleep(8300);
+                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
         }
 
-        public async void Error()
-        {
-            Console.WriteLine("There are Errors");
-            await UnsubscribeAsync("emulator/status");
-        }
+      
         
         //Subscribe messages from the MQTT Broker 
         private async Task SubscribeToTopic(string input,int qos = 1)
