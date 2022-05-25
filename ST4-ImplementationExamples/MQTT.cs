@@ -116,7 +116,7 @@ namespace ST4_ImplementationExamples
              
             try
             {  
-                Thread.Sleep(8300);
+                Thread.Sleep(8000);
                 var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
             }
             catch (Exception e)
