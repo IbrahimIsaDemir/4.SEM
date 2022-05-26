@@ -35,7 +35,7 @@ namespace ST4_ImplementationExamples
             string clientId = Guid.NewGuid().ToString();
             mqttClient = (MqttClient) new MqttFactory().CreateMqttClient();/// used to connection
             mqttClientOptions = new MqttClientOptionsBuilder()// connection Preparation
-                .WithCredentials("Jakub","1111")// ti si optional 
+                .WithCredentials("Jakub","1111")// it is  optional 
                 .WithClientId(clientId)
                 .WithTcpServer("localhost", 1883) //TCP connection
                 .WithCleanSession(true)
@@ -51,7 +51,6 @@ namespace ST4_ImplementationExamples
                 {
                     Console.WriteLine("Connected successfully with MQTT Brokers.");
                 }
-              
             });
             //on lost connection
             mqttClient.UseDisconnectedHandler(e =>
@@ -82,11 +81,11 @@ namespace ST4_ImplementationExamples
             //connect
             await mqttClient.ConnectAsync(mqttClientOptions);
         }
-        public async void Idle()//stand in idle state 
+        // idle state 
+        public async void Idle()
         {
             mqttClientOptionsBuilder = new MqttClientOptionsBuilder();
             mqttClientOptionsBuilder.WithCommunicationTimeout(TimeSpan.FromSeconds(10));
-            
             await SubscribeToTopic("emulator/status");
             await SubscribeToTopic("emulator/response");
             try
@@ -100,17 +99,15 @@ namespace ST4_ImplementationExamples
             }
                         
         }
-        // stand in execution state
+        //  execution state
         public async Task Execution()
         {
             await OperationRun();
             //on receive message on subscribed topic
-            
             Console.WriteLine("it is in execution state:"); 
             await SubscribeToTopic("emulator/response");
             await SubscribeToTopic("emulator/checkhealth");
             await SubscribeToTopic("emulator/status");
-             
             try
             {  
                 Thread.Sleep(8000);
@@ -136,7 +133,8 @@ namespace ST4_ImplementationExamples
             //subscribe
             await mqttClient.SubscribeAsync(topic);
         }
-        //unSubscribe messages from the MQTT Broker 
+        
+        //unSubscribe messages from  Broker 
         public async Task UnsubscribeAsync(string input)
         {
             var topic1 = new MqttTopicFilterBuilder()
@@ -145,13 +143,13 @@ namespace ST4_ImplementationExamples
            await mqttClient.UnsubscribeAsync(topic1.Topic);
         }
         
-        //Publish messages to the MQTT Broker
-        public async Task PublishOnTopic(String msg, string topic, int qos = 1)// added
+        
+        //Publish messages to  Broker
+        public async Task PublishOnTopic(String msg, string topic, int qos = 1)
         
         {
             var message =new MqttApplicationMessageBuilder()
                 .WithTopic(topic)
-                //.WithPayload("publish to broker ")
                 .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel) qos)
                 .WithRetainFlag(true)
                 .WithExactlyOnceQoS()
