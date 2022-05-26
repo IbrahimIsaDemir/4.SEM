@@ -23,7 +23,6 @@ namespace ST4_ImplementationExamples
     {
         public MQTT()
         { }
-        
         //MQTT vars
         MqttFactory factory;
         MqttClient mqttClient;
@@ -41,11 +40,9 @@ namespace ST4_ImplementationExamples
                 .WithTcpServer("localhost", 1883) //TCP connection
                 .WithCleanSession(true)
                 .WithRequestResponseInformation(true)
-                
-                .WithUserProperty("Bouzan","1993")
+                //.WithUserProperty("Bouzan","1993")
                 .Build();
-           
-
+            
             //the handlers of MQTTnet are very useful when working with an event-based communication
             //on established connection
             mqttClient.UseConnectedHandler(e =>
@@ -127,7 +124,7 @@ namespace ST4_ImplementationExamples
 
       
         
-        //Subscribe messages from the MQTT Broker 
+        //Subscribe messages from  Broker 
         private async Task SubscribeToTopic(string input,int qos = 1)
         {
             Console.WriteLine("Subscribing to : " + input);
