@@ -3,44 +3,30 @@ using MQTTnet.Client;
 using MQTTnet.Client.Options;
 using Newtonsoft.Json;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using MQTTnet.Extensions;
-using MQTTnet.Server.Internal;
-using System.IO;
-using System.Xml;
-using MQTTnet.Client.Unsubscribing;
-using MQTTnet.Server.Status;
-
 namespace ST4_ImplementationExamples
 {
     public class MQTT
     {
         public MQTT()
         { }
-        //MQTT vars
         MqttFactory factory;
         MqttClient mqttClient;
         IMqttClientOptions mqttClientOptions;
         MqttClientOptionsBuilder mqttClientOptionsBuilder;
-         //connection 
+        /// used to connection
         private async Task Connect()
         {
-            //init MQTT vars
             string clientId = Guid.NewGuid().ToString();
-            mqttClient = (MqttClient) new MqttFactory().CreateMqttClient();/// used to connection
-            mqttClientOptions = new MqttClientOptionsBuilder()// connection Preparation
-                .WithCredentials("Jakub","1111")// it is  optional 
+            mqttClient = (MqttClient) new MqttFactory().CreateMqttClient();
+            mqttClientOptions = new MqttClientOptionsBuilder()
+                .WithCredentials("Jakub","1111")
                 .WithClientId(clientId)
-                .WithTcpServer("localhost", 1883) //TCP connection
+                .WithTcpServer("localhost", 1883)
                 .WithCleanSession(true)
                 .WithRequestResponseInformation(true)
-                //.WithUserProperty("Bouzan","1993")
                 .Build();
             
             //the handlers of MQTTnet are very useful when working with an event-based communication
@@ -61,7 +47,7 @@ namespace ST4_ImplementationExamples
                           Console.WriteLine("Disconnected from MQTT Brokers.");
                       Task.Delay(TimeSpan.FromSeconds(5)); 
                                     
-                      mqttClient.ConnectAsync(mqttClientOptions); // Since 3.0.5 with CancellationToken
+                      mqttClient.ConnectAsync(mqttClientOptions); 
                 }
                 catch
                 {
@@ -72,8 +58,7 @@ namespace ST4_ImplementationExamples
             // receive message on subscribed topic
             mqttClient.UseApplicationMessageReceivedHandler(  e =>
             { Console.WriteLine("### RECEIVED APPLICATION MESSAGE ###");
-              // Console.WriteLine($"MQTT Subscribed message: {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)} on topic: {e.ApplicationMessage.Topic}");
-              Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
+                Console.WriteLine($"+ Topic = {e.ApplicationMessage.Topic}");
                Console.WriteLine($"+ Payload = {Encoding.UTF8.GetString(e.ApplicationMessage.Payload)}");
                Console.WriteLine($"+ QoS = {e.ApplicationMessage.QualityOfServiceLevel}");
                Console.WriteLine();
@@ -121,7 +106,7 @@ namespace ST4_ImplementationExamples
 
       
         
-        //Subscribe messages from  Broker 
+        //Subscribe messages from   
         private async Task SubscribeToTopic(string input,int qos = 1)
         {
             Console.WriteLine("Subscribing to : " + input);
@@ -130,11 +115,11 @@ namespace ST4_ImplementationExamples
                 .WithTopic(input)
                 .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel)qos)
                 .Build();
-            //subscribe
+            //subscribe topics
             await mqttClient.SubscribeAsync(topic);
         }
         
-        //unSubscribe messages from  Broker 
+        //unSubscribe messages from 
         public async Task UnsubscribeAsync(string input)
         {
             var topic1 = new MqttTopicFilterBuilder()
@@ -144,17 +129,10 @@ namespace ST4_ImplementationExamples
         }
         
         
-        //Publish messages to  Broker
+        //Publish messages to 
         public async Task PublishOnTopic(String msg, string topic, int qos = 1)
         
         {
-            var message =new MqttApplicationMessageBuilder()
-                .WithTopic(topic)
-                .WithQualityOfServiceLevel((MQTTnet.Protocol.MqttQualityOfServiceLevel) qos)
-                .WithRetainFlag(true)
-                .WithExactlyOnceQoS()
-                .Build();
-            await mqttClient.PublishAsync(message, CancellationToken.None);
             await mqttClient.PublishAsync(msg,topic);
         }
         
@@ -163,22 +141,18 @@ namespace ST4_ImplementationExamples
         { //connect and subscribe
             await Connect();
         }
-        public async Task OperationRun()
+
+        private async Task OperationRun()
         {
             //json serializable object
             var msg = new MqttMessage();
-            msg.ProcessID =1;
+            msg.ProcessID =9;
             //run publish
             if (msg.ProcessID!=9999)
             {
                 await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
             }
-            else
-            {
-                await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
-                Console.WriteLine("There is an error");
-
-            }
+           
         }
     }
     //class to serialize json objects
