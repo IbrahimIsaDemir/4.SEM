@@ -66,7 +66,7 @@ namespace ST4_ImplementationExamples
             //connect
             await mqttClient.ConnectAsync(mqttClientOptions);
         }
-        // idle state 
+        // idle state 0 
         public async void Idle()
         {
             mqttClientOptionsBuilder = new MqttClientOptionsBuilder();
@@ -76,7 +76,7 @@ namespace ST4_ImplementationExamples
             try
             {  
                 Thread.Sleep(1000);
-                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+                var b = UnsubscribeToTopic("emulator/status").Wait(TimeSpan.FromSeconds(9));
             }
             catch (Exception e)
             {
@@ -84,7 +84,7 @@ namespace ST4_ImplementationExamples
             }
                         
         }
-        //  execution state
+        //  execution state 1
         public async Task Execution()
         {
             await OperationRun();
@@ -96,7 +96,7 @@ namespace ST4_ImplementationExamples
             try
             {  
                 Thread.Sleep(8000);
-                var b = UnsubscribeAsync("emulator/status").Wait(TimeSpan.FromSeconds(9));
+                var b = UnsubscribeToTopic("emulator/status").Wait(TimeSpan.FromSeconds(9));
             }
             catch (Exception e)
             {
@@ -120,7 +120,7 @@ namespace ST4_ImplementationExamples
         }
         
         //unSubscribe messages from 
-        public async Task UnsubscribeAsync(string input)
+        public async Task UnsubscribeToTopic(string input)
         {
             var topic1 = new MqttTopicFilterBuilder()
                 .WithTopic(input)
@@ -149,7 +149,7 @@ namespace ST4_ImplementationExamples
             msg.ProcessID =9;
             //run publish
             if (msg.ProcessID!=9999)
-            {
+            {   // Operation topic is used to execute program
                 await PublishOnTopic("emulator/operation", JsonConvert.SerializeObject(msg));
             }
            
